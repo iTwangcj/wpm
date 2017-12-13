@@ -1,0 +1,21 @@
+{
+	"name": "wpm-tool",
+	"version": "0.0.1",
+	"description": "wpm-tool",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/iTwangcj/wpm.git"
+	},
+	"keywords": [
+		"wpm",
+		"cli",
+		"tool",
+		"wpm-tool"
+	],
+	"main": "index.js",
+	"bin": {
+		"wpm": "bin/wpm.js"
+	},
+	"author": "itwang <itwangcj@gmail.com> ",
+	"license": "MIT"
+}
