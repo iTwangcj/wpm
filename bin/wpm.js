@@ -47,9 +47,28 @@ const run = (args) => {
 		}
 		console.log('removed packages: %s successful.', delArr.join(' '));
 	} else {
+		let command = args.join(' ');
+		if (args[0] === 'install' || args[0] === 'i') {
+			const packagePath = path.join(getGlobalPath(args), 'package.json');
+			let manifest = require(packagePath);
+			let dependencies = manifest.dependencies;
+			let devDependencies = manifest.devDependencies;
+			let externals = [];
+			const getDependencies = function (_dependencies) {
+				_dependencies = _dependencies || {};
+				for (let p in _dependencies) {
+					if (_dependencies.hasOwnProperty(p)) {
+						externals.push(p);
+					}
+				}
+			};
+			getDependencies(dependencies);
+			getDependencies(devDependencies);
+			command = 'install ' + externals.join(' ');
+		}
 		client.connectionSocket({
 			node_modules_path: getGlobalPath(args),
-			command: args.join(' ')
+			command: command
 		});
 	}
 };
