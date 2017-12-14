@@ -18,8 +18,9 @@ const getGlobalPath = (args) => {
 };
 
 const run = (args) => {
-	if (args[0] === '-v') {
-		console.log('version is 1.0.0');
+	if (args[0] && args[0].toLowerCase() === '-v' || args[0] === '--version') {
+		const pack = require('../package.json');
+		console.log(`version is ${pack.version}`);
 	} else if (!args.length || args[0] === '-h') {
 		console.log('Useage:');
 		console.log('  -h --help [show all command parameters]');
