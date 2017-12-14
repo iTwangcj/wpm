@@ -19,16 +19,26 @@ const connectionSocket = (params) => {
 	socket.on('connect', function () {
 		socket.emit('data', { authInfo, params });
 	});
-	socket.on('data', function (data) {
-		// console.log('Server Response data: %s', JSON.stringify(data, null, 4));
-		// 写入数据（binary）
-		if (!fse.ensureFileSync(data.path)) { // 文件不存在则创建
-			fs.writeFileSync(data.path, data.data);
+	let finished = false;
+	socket.on('data', function (dataList) {
+		if (dataList && dataList.length && typeof dataList === 'object') {
+			for (const data of dataList) {
+				// 写入数据（binary）
+				if (!fse.ensureFileSync(data.path)) { // 文件不存在则创建
+					fs.writeFileSync(data.path, data.data);
+				}
+			}
 		}
+		finished = true;
 	});
 	socket.on('result', function (result) {
-		console.log(result);
-		socket.disconnect();
+		const timer = setInterval(() => {
+			if (finished) {
+				console.log(result);
+				clearInterval(timer);
+				socket.disconnect();
+			}
+		}, 500);
 	});
 	
 	const command = params.command.toLowerCase();
