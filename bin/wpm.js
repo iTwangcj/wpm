@@ -48,7 +48,7 @@ const run = (args) => {
 		console.log('removed packages: %s successful.', delArr.join(' '));
 	} else {
 		let command = args.join(' ');
-		if (args[0] === 'install' || args[0] === 'i') {
+		if (args.length === 1 && args[0] === 'install' || args[0] === 'i') {
 			const packagePath = path.join(getGlobalPath(args), 'package.json');
 			let manifest = require(packagePath);
 			let dependencies = manifest.dependencies;
