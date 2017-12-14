@@ -1,6 +1,6 @@
 {
 	"name": "wpm-tool",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "wpm-tool",
 	"repository": {
 		"type": "git",
@@ -17,5 +17,9 @@
 		"wpm": "bin/wpm.js"
 	},
 	"author": "itwang <itwangcj@gmail.com> ",
-	"license": "MIT"
+	"license": "MIT",
+	"dependencies": {
+		"fs-extra": "^5.0.0",
+		"socket.io-client": "~2.0.4"
+	}
 }

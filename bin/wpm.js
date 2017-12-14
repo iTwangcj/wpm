@@ -1,23 +1,57 @@
 #!/usr/bin/env node
-const fs = require('fs'),
-    path = process.cwd();
+const execSync = require('child_process').execSync;
+const path = require('path');
+const client = require('../client');
 
-const run = function (obj) {
-    if (obj[0] === '-v') {
-        console.log('version is 1.0.0');
-    } else if (obj[0] === '-h') {
-        console.log('Useage:');
-        console.log('  -v --version [show version]');
-    } else {
-        fs.readdir(path, function (err, files) {
-            if (err) {
-                return console.log(err);
-            }
-            for (let i = 0; i < files.length; i += 1) {
-                console.log(files[i]);
-            }
-        });
-    }
+const getGlobalPath = (args) => {
+	if (args.includes('-g') || args.includes('--global')) {
+		// 获取npm的全局路径
+		const nodePath = execSync('which node').toString();
+		const nodeHome = path.resolve(nodePath, '../../');
+		let global_node_modules = '';
+		if (nodeHome.includes('.nvm')) {
+			global_node_modules = path.resolve(nodeHome, 'lib');
+		}
+		return global_node_modules;
+	}
+	return path.resolve(process.cwd());
+};
+
+const run = (args) => {
+	if (args[0] === '-v') {
+		console.log('version is 1.0.0');
+	} else if (!args.length || args[0] === '-h') {
+		console.log('Useage:');
+		console.log('  -h --help [show all command parameters]');
+		console.log('  -l --login [user login]');
+		console.log('  -v --version [show version]');
+		console.log('  -i --install [install package]');
+		console.log('  -u --uninstall [uninstall package]');
+		console.log('  -g --global [global install package]');
+	} else if (args[0] === 'uninstall' || args[0] === 'u') {
+		const delArr = args.slice(1, args.length);
+		const dirPath = getGlobalPath(args) + '/';
+		let index = delArr.indexOf('-g');
+		if (index === -1) {
+			index = delArr.indexOf('--global');
+		}
+		if (index > -1) {
+			delArr.splice(index, 1);
+			for (const dir of delArr) {
+				execSync(`npm uninstall ${dir} -g`);
+			}
+		} else {
+			for (const dir of delArr) {
+				execSync(`rm -rf ${dir}`, { cwd: dirPath });
+			}
+		}
+		console.log('removed packages: %s successful.', delArr.join(' '));
+	} else {
+		client.connectionSocket({
+			node_modules_path: getGlobalPath(args),
+			command: args.join(' ')
+		});
+	}
 };
 //获取除第一个命令以后的参数，使用空格拆分
 run(process.argv.slice(2));
