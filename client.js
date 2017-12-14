@@ -31,23 +31,26 @@ const connectionSocket = (params) => {
 		socket.disconnect();
 	});
 	
-	if (!authInfo) {
-		let username, password;
+	const command = params.command.toLowerCase();
+	if (!authInfo || command === 'login' || command === 'l') {
+		let username = null, password = null;
 		process.stdin.setEncoding('utf8');
 		process.stdout.write('Username: ');
 		process.stdin.on('data', function (chunk) {
 			if (chunk !== null) {
 				if (!username) {
-					username = chunk.replace('\n', '');
+					username = chunk;
 					process.stdout.write('Password: ');
 				} else {
-					password = chunk.replace('\n', '');
+					password = chunk;
 					process.stdin.emit('login');
 				}
 			}
 		});
 		process.stdin.on('login', () => {
-			socket.emit('login', { username, password });
+			if (username && password) {
+				socket.emit('login', { username: username.replace('\n', ''), password: password.replace('\n', '') });
+			}
 		});
 		socket.on('validation', function (msg) {
 			process.stdout.write(msg + ',请重新登陆\n');
