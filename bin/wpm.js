@@ -59,7 +59,9 @@ const run = (args) => {
 				_dependencies = _dependencies || {};
 				for (let p in _dependencies) {
 					if (_dependencies.hasOwnProperty(p)) {
-						externals.push(p);
+						let version = _dependencies[p].replace('^', '');
+						version = version.replace('~', '');
+						externals.push(p + '@' + version);
 					}
 				}
 			};
