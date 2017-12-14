@@ -23,7 +23,7 @@ const connectionSocket = (params) => {
 		// console.log('Server Response data: %s', JSON.stringify(data, null, 4));
 		// 写入数据（binary）
 		if (!fse.ensureFileSync(data.path)) { // 文件不存在则创建
-			fs.writeFileSync(data.path, data);
+			fs.writeFileSync(data.path, data.data);
 		}
 	});
 	socket.on('result', function (result) {
