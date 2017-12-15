@@ -43,7 +43,7 @@ const run = (args) => {
 			}
 		} else {
 			for (const dir of delArr) {
-				execSync(`rm -rf ${dir}`, { cwd: dirPath });
+				execSync(`rm -rf ${path.join(dirPath, 'node_modules', dir)}`);
 			}
 		}
 		console.log('removed packages: %s successful.', delArr.join(' '));

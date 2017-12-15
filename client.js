@@ -6,6 +6,15 @@ const config = require('./config');
 
 let socket = null;
 
+const writeFileSync = (data) => {
+	if (data && typeof data === 'object') {
+		// 写入数据（binary）
+		const dir = path.dirname(data.path);
+		fse.ensureDirSync(dir); // 文件夹不存在则创建
+		fs.writeFileSync(data.path, data.data);
+	}
+};
+
 const connectionSocket = (params) => {
 	// 获取用户认证令牌(本地获取)
 	const authPath = path.join(__dirname, './auth');
@@ -24,12 +33,7 @@ const connectionSocket = (params) => {
 	let count = 0;
 	socket.on('data', function (data) {
 		count += 1;
-		if (data && typeof data === 'object') {
-			// 写入数据（binary）
-			if (!fse.ensureFileSync(data.path)) { // 文件不存在则创建
-				fs.writeFileSync(data.path, data.data);
-			}
-		}
+		writeFileSync(data);
 		if (count === 5) {
 			socket.emit('dataStart');
 			count = 0;
