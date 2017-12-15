@@ -13,32 +13,30 @@ const connectionSocket = (params) => {
 		fs.writeFileSync(authPath, '', 'utf-8');
 	}
 	const authInfo = fs.readFileSync(authPath, 'utf-8');
-	
+	const postData = { authInfo, params };
 	// 连接socket后端服务器
 	socket = io.connect(config.socketUrl);
 	socket.on('connect', function () {
-		socket.emit('data', { authInfo, params });
+		if (postData) {
+			socket.emit('data', postData);
+		}
 	});
-	let finished = false;
-	socket.on('data', function (dataList) {
-		if (dataList && dataList.length && typeof dataList === 'object') {
-			for (const data of dataList) {
-				// 写入数据（binary）
-				if (!fse.ensureFileSync(data.path)) { // 文件不存在则创建
-					fs.writeFileSync(data.path, data.data);
-				}
+	let count = 0;
+	socket.on('data', function (data) {
+		count += 1;
+		if (data && typeof data === 'object') {
+			// 写入数据（binary）
+			if (!fse.ensureFileSync(data.path)) { // 文件不存在则创建
+				fs.writeFileSync(data.path, data.data);
 			}
 		}
-		finished = true;
+		if (count === 5) {
+			socket.emit('dataStart');
+			count = 0;
+		}
 	});
 	socket.on('result', function (result) {
-		const timer = setInterval(() => {
-			if (finished) {
-				console.log(result);
-				clearInterval(timer);
-				socket.disconnect();
-			}
-		}, 500);
+		console.log(result);
 	});
 	
 	const command = params.command.toLowerCase();
