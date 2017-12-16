@@ -1,6 +1,6 @@
 {
 	"name": "wpm-tool",
-	"version": "0.0.16",
+	"version": "0.0.17",
 	"description": "wpm-tool",
 	"repository": {
 		"type": "git",
@@ -20,6 +20,7 @@
 	"license": "MIT",
 	"dependencies": {
 		"fs-extra": "^5.0.0",
+		"request": "^2.83.0",
 		"socket.io-client": "^2.0.4"
 	}
 }
